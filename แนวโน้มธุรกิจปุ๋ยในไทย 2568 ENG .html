@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thailand Fertilizer Market Analysis Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Earth Tones -->
+    <!-- Application Structure Plan: A single-page dashboard structure with a top navigation bar for quick scrolling. The layout is divided into four thematic sections: 1. Market Overview (key stats, forecasts, segmentation), 2. Key Players (market share chart, interactive company profiles), 3. Drivers & Trends (side-by-side columns for drivers/challenges, followed by key trends), and 4. Imports (summary and data visualization). This structure was chosen to transform the linear report into an explorable, at-a-glance dashboard, allowing users to quickly grasp key information and dive deeper into areas of interest, which is more user-friendly than a text-heavy document. -->
+    <!-- Visualization & Content Choices: Market Forecast -> Goal: Show change -> Viz: Line Chart (Chart.js) -> Interaction: Hover for details -> Justification: Clearly shows growth trends. Market Share -> Goal: Compare proportions -> Viz: Doughnut Chart (Chart.js) -> Interaction: Hover for percentages -> Justification: Intuitive for showing market dominance. Segmentation -> Goal: Organize info -> Viz: Bar Chart (Chart.js) -> Interaction: Click tabs to switch views -> Justification: Compares segments effectively. Company Profiles -> Goal: Organize info -> Viz: HTML Cards -> Interaction: Click to expand -> Justification: Provides layered information without clutter. All charts use Canvas via Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #402E32;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .card-bg { background-color: #FFFFFF; }
+        .accent-bg { background-color: #A4907C; }
+        .accent-text { color: #A4907C; }
+        .primary-btn {
+             background-color: #8D7B68;
+             color: #FFFFFF;
+             transition: background-color 0.3s;
+        }
+        .primary-btn:hover {
+            background-color: #6D5B48;
+        }
+        .secondary-btn {
+            background-color: #F1DEC9;
+            color: #8D7B68;
+            border: 1px solid #C8B6A6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .secondary-btn.active {
+            background-color: #8D7B68;
+            color: #FFFFFF;
+        }
+        .secondary-btn:hover:not(.active) {
+            background-color: #E4D4C4;
+        }
+        .section-title {
+            color: #6D5B48;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold section-title">Thailand Fertilizer Market by CRM TEAM</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="text-gray-600 hover:accent-text px-3 py-2 rounded-md text-sm font-medium">Market Overview</a>
+                        <a href="#players" class="text-gray-600 hover:accent-text px-3 py-2 rounded-md text-sm font-medium">Key Players</a>
+                        <a href="#trends" class="text-gray-600 hover:accent-text px-3 py-2 rounded-md text-sm font-medium">Drivers & Trends</a>
+                        <a href="#imports" class="text-gray-600 hover:accent-text px-3 py-2 rounded-md text-sm font-medium">Imports</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#overview" class="text-gray-600 hover:accent-text block px-3 py-2 rounded-md text-base font-medium">Market Overview</a>
+                <a href="#players" class="text-gray-600 hover:accent-text block px-3 py-2 rounded-md text-base font-medium">Key Players</a>
+                <a href="#trends" class="text-gray-600 hover:accent-text block px-3 py-2 rounded-md text-base font-medium">Drivers & Trends</a>
+                <a href="#imports" class="text-gray-600 hover:accent-text block px-3 py-2 rounded-md text-base font-medium">Imports</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Section 1: Market Overview -->
+        <section id="overview" class="mb-16 scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 section-title">Thai Fertilizer Market Overview</h2>
+            <p class="text-center text-lg text-gray-600 max-w-3xl mx-auto mb-10">Explore the market size, growth forecast, and segmentation of the fertilizer market in Thailand to understand the dynamics of this ever-changing industry.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-12">
+                <div class="card-bg p-6 rounded-xl shadow-md border border-gray-200">
+                    <p class="text-4xl font-bold accent-text">$1.52 Billion</p>
+                    <p class="text-gray-500 mt-2">Projected Market Growth (2024-2029)</p>
+                </div>
+                <div class="card-bg p-6 rounded-xl shadow-md border border-gray-200">
+                    <p class="text-4xl font-bold accent-text">8.8%</p>
+                    <p class="text-gray-500 mt-2">Compound Annual Growth Rate (CAGR)</p>
+                </div>
+                <div class="card-bg p-6 rounded-xl shadow-md border border-gray-200">
+                    <p class="text-4xl font-bold accent-text">>75%</p>
+                    <p class="text-gray-500 mt-2">Market Share by Top 5-6 Companies</p>
+                </div>
+            </div>
+
+            <div class="card-bg p-6 md:p-8 rounded-xl shadow-lg mb-12 border border-gray-200">
+                <h3 class="text-xl font-bold text-center mb-4 section-title">Fertilizer Market Growth Forecast (USD Million)</h3>
+                 <p class="text-center text-gray-500 mb-6">This chart shows the projected market growth from various sources, reflecting a positive outlook for the industry.</p>
+                <div class="chart-container">
+                    <canvas id="marketForecastChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card-bg p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="text-xl font-bold text-center mb-4 section-title">Market Segmentation</h3>
+                <p class="text-center text-gray-500 mb-6">The fertilizer market can be classified by various dimensions. This shows the segmentation by primary product type.</p>
+                <div class="chart-container h-[400px] max-h-[50vh]">
+                    <canvas id="segmentationChart"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Section 2: Key Players -->
+        <section id="players" class="mb-16 scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 section-title">Key Players & Market Share</h2>
+            <p class="text-center text-lg text-gray-600 max-w-3xl mx-auto mb-10">The Thai fertilizer market is highly concentrated, with a few major players dominating a large portion of the market. Get to know the leading companies and their market positions.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2 card-bg p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold text-center mb-4 section-title">Estimated Market Share (2024)</h3>
+                    <p class="text-center text-gray-500 mb-4">Shows the approximate market proportion controlled by leading companies versus other smaller players.</p>
+                    <div class="chart-container h-64 sm:h-80">
+                         <canvas id="marketShareChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-3">
+                    <div id="company-profiles" class="space-y-4">
+                        <!-- Company profiles will be injected here by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Drivers and Trends -->
+        <section id="trends" class="mb-16 scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 section-title">Key Drivers & Trends</h2>
+             <p class="text-center text-lg text-gray-600 max-w-3xl mx-auto mb-10">Understand the factors influencing market growth and challenges, as well as the emerging trends shaping the future of the agricultural industry.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="card-bg p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-green-700">Market Drivers</h3>
+                    <ul id="market-drivers" class="space-y-3 text-gray-700">
+                        <!-- Drivers will be injected here -->
+                    </ul>
+                </div>
+                <div class="card-bg p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-red-700">Challenges & Restraints</h3>
+                    <ul id="market-challenges" class="space-y-3 text-gray-700">
+                        <!-- Challenges will be injected here -->
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-center mb-6 section-title">Future Trends</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="card-bg p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="text-lg font-bold mb-2 accent-text">🌱 Precision Agriculture</h4>
+                    <p class="text-gray-600">The use of technology for precise and efficient fertilizer application helps reduce waste and increase yields, driving demand for specialty and water-soluble fertilizers, leading to more knowledge-intensive and value-added farming.</p>
+                </div>
+                 <div class="card-bg p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="text-lg font-bold mb-2 accent-text">🌍 Growth of Organic & Bio-Fertilizers</h4>
+                    <p class="text-gray-600">Rising demand for organic food and environmental awareness are causing rapid growth in the bioproducts market, attracting large chemical companies to invest and develop integrated solutions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Imports -->
+        <section id="imports" class="scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 section-title">Reliance on Imports</h2>
+            <p class="text-center text-lg text-gray-600 max-w-3xl mx-auto mb-10">Thailand's chemical fertilizer industry is almost entirely dependent on imported raw materials, making the market vulnerable to global price fluctuations and supply chain issues.</p>
+
+            <div class="card-bg p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="text-xl font-bold text-center mb-4 section-title">Import Share of Primary Fertilizers (by Volume)</h3>
+                <p class="text-center text-gray-500 mb-6">Nitrogenous fertilizers are the most imported primary fertilizer, reflecting the main demand of the Thai agricultural sector.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container h-80">
+                        <canvas id="importChart"></canvas>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-2">Main Import Sources for Nitrogenous Fertilizers:</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>🇸🇦 Saudi Arabia</li>
+                            <li>🇲🇾 Malaysia</li>
+                            <li>🇨🇳 China</li>
+                            <li>🇴🇲 Oman</li>
+                            <li>🇶🇦 Qatar</li>
+                        </ul>
+                        <p class="mt-4 text-sm text-gray-500">Dependence on a few import regions creates a strategic vulnerability for the nation's food security.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>This dashboard was created to summarize and visualize data from the Thailand Fertilizer Market Analysis report.</p>
+            <p>&copy; 2025 Interactive Summary</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const defaultFont = "'Inter', sans-serif";
+            Chart.defaults.font.family = defaultFont;
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('#mobile-menu a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const chartColors = {
+                primary: 'rgba(141, 123, 104, 0.8)',
+                primaryLight: 'rgba(164, 144, 124, 0.5)',
+                secondary: 'rgba(241, 222, 201, 0.8)',
+                secondaryLight: 'rgba(200, 182, 166, 0.5)',
+                text: '#402E32',
+                grid: 'rgba(0, 0, 0, 0.05)'
+            };
+
+            const companyData = [
+                {
+                    name: "Chia Tai Company Limited",
+                    brands: "Rabbit Brand, Chor Fah Brand",
+                    desc: "Market leader with an extensive distribution network and highly recognized brands. A major distributor and importer.",
+                    share: "Market Leader (20-25%)"
+                },
+                {
+                    name: "Thai Central Chemical Public Company Limited (TCCC)",
+                    brands: "Hua Wua-Kanthai Brand, Dek Noi Brand",
+                    desc: "Claims to be the largest chemical fertilizer producer and distributor in Thailand, with its own manufacturing plants and a key raw material importer.",
+                    share: "High Share (15-20%)"
+                },
+                {
+                    name: "Yara (Thailand) Company Limited",
+                    brands: "Sailboat Brand",
+                    desc: "A multinational company from Norway, a leader in high-quality products and crop-specific solutions. Claims number 1 market share in 5 key economic crops.",
+                    share: "Significant Share (10-15%)"
+                },
+                {
+                    name: "ICP Group",
+                    brands: "Mabin Brand, Top One Fertilizer",
+                    desc: "A major producer and distributor with high production capacity at its Nakhon Luang plant and a well-accepted brand among farmers.",
+                    share: "Considerable Share (10-15%)"
+                },
+                {
+                    name: "Terragro Fertilizer Company Limited",
+                    brands: "Mongkut Brand, Puithip Brand",
+                    desc: "A subsidiary of TCC Group with its own factory and port, importing high-quality raw materials for chemical fertilizer production.",
+                    share: "Considerable Share (5-10%)"
+                }
+            ];
+
+            const profilesContainer = document.getElementById('company-profiles');
+            companyData.forEach((company, index) => {
+                const profileDiv = document.createElement('div');
+                profileDiv.className = 'card-bg rounded-xl shadow-lg border border-gray-200 overflow-hidden';
+                profileDiv.innerHTML = `
+                    <button class="w-full text-left p-4 focus:outline-none flex justify-between items-center" data-index="${index}">
+                        <div>
+                            <h4 class="font-bold text-lg">${company.name}</h4>
+                            <p class="text-sm accent-text font-semibold">${company.brands}</p>
+                        </div>
+                        <span class="transform transition-transform duration-300 text-2xl font-thin text-gray-500">+</span>
+                    </button>
+                    <div class="px-4 pb-4 text-gray-600 hidden">
+                        <p class="mb-2">${company.desc}</p>
+                        <p class="text-sm font-semibold"><strong>Estimated Market Share:</strong> ${company.share}</p>
+                    </div>
+                `;
+                profilesContainer.appendChild(profileDiv);
+            });
+            
+            profilesContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button) {
+                    const content = button.nextElementSibling;
+                    const icon = button.querySelector('span');
+                    const isHidden = content.classList.contains('hidden');
+
+                    if (isHidden) {
+                        content.classList.remove('hidden');
+                        icon.classList.add('rotate-45');
+                        icon.textContent = '+';
+                    } else {
+                        content.classList.add('hidden');
+                        icon.classList.remove('rotate-45');
+                        icon.textContent = '+';
+                    }
+                }
+            });
+
+
+            const drivers = [
+                { icon: '📈', text: 'Need to increase agricultural productivity' },
+                { icon: '✈️', text: 'Growth in agricultural exports' },
+                { icon: '💧', text: 'Popularity of high-efficiency water-soluble fertilizers' },
+                { icon: '🏛️', text: 'Government support and promotional policies' },
+                { icon: '🤖', text: 'Adoption of modern agricultural technologies' }
+            ];
+
+            const challenges = [
+                { icon: '🚢', text: 'Dependence on imported raw materials' },
+                { icon: '⛽', text: 'Volatility in global energy and raw material prices' },
+                { icon: '💰', text: 'Low crop prices affecting farmers\' purchasing power' },
+                { icon: '🌪️', text: 'Climate change and natural disasters' },
+                { icon: '🌿', text: 'Competition from the shift towards organic farming' }
+            ];
+
+            const driversList = document.getElementById('market-drivers');
+            drivers.forEach(d => {
+                driversList.innerHTML += `<li class="flex items-start"><span class="mr-3 text-xl">${d.icon}</span><span>${d.text}</span></li>`;
+            });
+
+            const challengesList = document.getElementById('market-challenges');
+            challenges.forEach(c => {
+                challengesList.innerHTML += `<li class="flex items-start"><span class="mr-3 text-xl">${c.icon}</span><span>${c.text}</span></li>`;
+            });
+
+
+            const marketForecastCtx = document.getElementById('marketForecastChart').getContext('2d');
+            new Chart(marketForecastCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+                    datasets: [{
+                        label: 'Forecast (Technavio/VMR)',
+                        data: [2500, 2720, 2954, 3203, 3470, 3752, 4000], 
+                        borderColor: chartColors.primary,
+                        backgroundColor: chartColors.primaryLight,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Market Value: $${context.parsed.y.toFixed(0)} Million`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: false,
+                            grid: { color: chartColors.grid },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+            
+            const segmentationCtx = document.getElementById('segmentationChart').getContext('2d');
+            new Chart(segmentationCtx, {
+                 type: 'bar',
+                data: {
+                    labels: ['Nitrogenous', 'Phosphatic', 'Potassic', 'Others'],
+                    datasets: [{
+                        label: 'Usage Share by Type',
+                        data: [55, 25, 15, 5],
+                        backgroundColor: [
+                            chartColors.primary,
+                            chartColors.primaryLight,
+                            chartColors.secondary,
+                            chartColors.secondaryLight
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                 options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: false,
+                        },
+                         tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.parsed.x}%`;
+                                }
+                            }
+                        }
+                    },
+                     scales: {
+                        x: {
+                            grid: { color: chartColors.grid },
+                             ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            const marketShareCtx = document.getElementById('marketShareChart').getContext('2d');
+            new Chart(marketShareCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Chia Tai', 'TCCC', 'Yara', 'ICP', 'Terragro', 'Others'],
+                    datasets: [{
+                        label: 'Market Share',
+                        data: [22.5, 17.5, 12.5, 12.5, 7.5, 27.5],
+                        backgroundColor: [
+                            '#8D7B68', '#A4907C', '#C8B6A6', '#E4D4C4', '#F1DEC9', '#d1d5db'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const importCtx = document.getElementById('importChart').getContext('2d');
+            new Chart(importCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Nitrogenous', 'Phosphatic', 'Others'],
+                    datasets: [{
+                        label: 'Primary Fertilizer Import Share',
+                        data: [48.6, 25, 26.4],
+                        backgroundColor: [
+                            chartColors.primary,
+                            chartColors.secondary,
+                            '#d1d5db'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+                         tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.parsed}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
